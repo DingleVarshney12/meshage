@@ -6,6 +6,15 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Meshage - private conversations",
   description: "A modern chat app for friends, groups, and communities.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Meshage",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/meshage-logo.png",
+  },
 };
 
 export default function RootLayout({

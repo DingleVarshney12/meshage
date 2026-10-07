@@ -15,10 +15,15 @@ import { DataSource, IsNull } from "typeorm";
 import type { Server, Socket } from "socket.io";
 import { ProfileVisibilityService } from "../profile/profile-visibility.service";
 import { ConversationMember } from "../database/entities/conversation-member.entity";
+import {
+  Conversation,
+  ConversationType,
+} from "../database/entities/conversation.entity";
 import { ConversationTypingDto } from "./dto/conversation-typing.dto";
 import { JoinConversationDto } from "./dto/join-conversation.dto";
 import { PresenceService } from "./presence.service";
 import { UpstashThrottlerStorage } from "../infrastructure/upstash-throttler.storage";
+import { WebPushService } from "../infrastructure/web-push.service";
 
 interface AccessTokenPayload {
   sub?: string;
@@ -103,6 +108,7 @@ export class ConversationsGateway
     private readonly presenceService: PresenceService,
     private readonly profileVisibilityService: ProfileVisibilityService,
     private readonly throttlerStorage: UpstashThrottlerStorage,
+    private readonly webPushService: WebPushService,
   ) {}
   afterInit(server: Server) {
     server.use((client, next) => {
@@ -166,6 +172,12 @@ export class ConversationsGateway
 
   async emitMessage(conversationId: string, message: object) {
     try {
+      const conversation = await this.dataSource
+        .getRepository(Conversation)
+        .findOne({
+          where: { id: conversationId },
+          select: { id: true, type: true },
+        });
       const members = await this.dataSource
         .getRepository(ConversationMember)
         .find({
@@ -244,6 +256,20 @@ export class ConversationsGateway
         this.server
           .to(getUserRoom(member.userId))
           .emit("conversation:message", personalizedMessage);
+
+        if (
+          conversation?.type !== ConversationType.WORLD &&
+          payload.sender?.id !== member.userId
+        ) {
+          void this.webPushService
+            .sendToUser(member.userId, "new_message", `/chat/${conversationId}`)
+            .catch((error: unknown) => {
+              this.logger.warn(
+                "Could not deliver a new-message browser notification.",
+                error instanceof Error ? error.message : undefined,
+              );
+            });
+        }
       }
     } catch (error) {
       this.logger.error(

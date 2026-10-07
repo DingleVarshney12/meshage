@@ -13,6 +13,7 @@ import { MessageAttachment } from "./entities/message-attachment.entity";
 import { MessageReaction } from "./entities/message-reaction.entity";
 import { AuthToken } from "./entities/auth-token.entity";
 import { Notification } from "./entities/notification.entity";
+import { PushSubscription } from "./entities/push-subscription.entity";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { Notification } from "./entities/notification.entity";
       MessageReaction,
       AuthToken,
       Notification,
+      PushSubscription,
     ]),
   ],
   exports: [TypeOrmModule],

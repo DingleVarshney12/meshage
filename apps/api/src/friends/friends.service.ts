@@ -226,6 +226,14 @@ export class FriendsService {
       if (dto.decision === "reject") {
         request.status = FriendRequestStatus.REJECTED;
         await requests.save(request);
+        notification = await this.notificationsService.createInTransaction(
+          manager,
+          {
+            recipientId: request.senderId,
+            actorId: receiverId,
+            type: NotificationType.FRIEND_REQUEST_REJECTED,
+          },
+        );
         changedUserIds = [receiverId, request.senderId];
         return { message: "Friend request rejected." };
       }

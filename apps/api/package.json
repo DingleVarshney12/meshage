@@ -8,6 +8,8 @@
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit",
     "typeorm": "typeorm-ts-node-commonjs",
+    "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
+    "webpush:generate-keys": "web-push generate-vapid-keys",
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --coverage"
@@ -37,7 +39,8 @@
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
     "socket.io": "4.8.4",
-    "typeorm": "1.1.1"
+    "typeorm": "1.1.1",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
@@ -48,6 +51,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "26.6.4",
     "@types/nodemailer": "^8.0.2",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9.39.5",
     "globals": "^16.4.0",
     "jest": "^30.5.2",

@@ -9,6 +9,7 @@ import {
 export enum NotificationType {
   FRIEND_REQUEST_RECEIVED = "friend_request_received",
   FRIEND_REQUEST_ACCEPTED = "friend_request_accepted",
+  FRIEND_REQUEST_REJECTED = "friend_request_rejected",
 }
 
 @Entity({ name: "notifications" })

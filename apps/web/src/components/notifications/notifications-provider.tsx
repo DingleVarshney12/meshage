@@ -77,6 +77,10 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
         toast("Friend request accepted", {
           description: "You are now friends and can start a conversation.",
         });
+      } else if (event.notification.type === "friend_request_rejected") {
+        toast("Friend request declined", {
+          description: "Your friend request was declined.",
+        });
       }
     }
 

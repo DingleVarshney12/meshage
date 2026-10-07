@@ -3,6 +3,7 @@ import { SupabaseStorageService } from "./supabase-storage.service";
 import { UpstashRedisService } from "./upstash-redis.service";
 import { UpstashThrottlerStorage } from "./upstash-throttler.storage";
 import { GoogleRecaptchaService } from "./google-recaptcha.service";
+import { WebPushService } from "./web-push.service";
 
 @Global()
 @Module({
@@ -11,12 +12,14 @@ import { GoogleRecaptchaService } from "./google-recaptcha.service";
     UpstashRedisService,
     UpstashThrottlerStorage,
     GoogleRecaptchaService,
+    WebPushService,
   ],
   exports: [
     SupabaseStorageService,
     UpstashRedisService,
     UpstashThrottlerStorage,
     GoogleRecaptchaService,
+    WebPushService,
   ],
 })
 export class InfrastructureModule {}

@@ -24,6 +24,13 @@ function getNotificationCopy(notification: AppNotification) {
     };
   }
 
+  if (notification.type === "friend_request_rejected") {
+    return {
+      title: "Friend request declined",
+      description: "Your friend request was declined.",
+    };
+  }
+
   return {
     title: "Friend request accepted",
     description: "You are now friends and can start a conversation.",

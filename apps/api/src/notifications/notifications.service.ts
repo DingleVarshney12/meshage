@@ -11,6 +11,7 @@ import {
   NotificationType,
 } from "../database/entities/notification.entity";
 import { ConversationsGateway } from "../conversations/conversations.gateway";
+import { WebPushService } from "../infrastructure/web-push.service";
 
 const NOTIFICATION_RETENTION_DAYS = 7;
 const CLEANUP_INTERVAL_MS = 60 * 60 * 1000;
@@ -40,6 +41,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly dataSource: DataSource,
     private readonly conversationsGateway: ConversationsGateway,
+    private readonly webPushService: WebPushService,
   ) {}
 
   async onModuleInit() {
@@ -76,6 +78,20 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       "notification:new",
       { notification },
     );
+    if (
+      notification.type === NotificationType.FRIEND_REQUEST_RECEIVED ||
+      notification.type === NotificationType.FRIEND_REQUEST_ACCEPTED ||
+      notification.type === NotificationType.FRIEND_REQUEST_REJECTED
+    ) {
+      void this.webPushService
+        .sendToUser(notification.recipientId, notification.type, "/friends")
+        .catch((error: unknown) => {
+          this.logger.warn(
+            "Could not deliver browser notification.",
+            error instanceof Error ? error.message : undefined,
+          );
+        });
+    }
   }
 
   emitFriendsChanged(userIds: string[]) {
