@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/theme/theme-toggle";
 import NotificationsBell from "@/components/notifications/notifications-bell";
+import { MeshageLogo } from "@/components/brand/meshage-logo";
 export type FriendsSection = "overview" | "friends" | "requests" | "discover";
 
 interface FriendsSidebarProps {
@@ -89,9 +90,7 @@ export default function FriendsSidebar({
   return (
     <aside className="flex w-full shrink-0 flex-col rounded-3xl bg-[#142348] p-3 text-white shadow-xl shadow-blue-950/10 lg:sticky lg:top-0 lg:h-[calc(100dvh-2.5rem)] lg:w-64 lg:self-start lg:overflow-y-auto lg:px-4 lg:py-6">
       <div className="flex items-center gap-3 px-2 py-2 lg:py-3">
-        <div className="grid size-9 place-items-center rounded-xl bg-white text-base font-bold text-primary shadow-lg shadow-black/10 lg:size-10 lg:rounded-2xl lg:text-lg">
-          M
-        </div>
+        <MeshageLogo showWordmark={false} markClassName="size-9 lg:size-10" />
         <div>
           <p className="text-sm font-semibold tracking-tight lg:text-base">
             Meshage<span className="text-blue-300">.</span>

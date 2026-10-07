@@ -14,6 +14,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/theme/theme-toggle";
+import { MeshageLogo } from "@/components/brand/meshage-logo";
 
 const conversations = [
   {
@@ -80,12 +81,7 @@ export default function HomePage() {
           className="flex items-center gap-3"
           aria-label="Meshage home"
         >
-          <span className="grid size-10 place-items-center rounded-2xl bg-primary text-lg font-bold text-primary-foreground shadow-lg shadow-primary/20">
-            M
-          </span>
-          <span className="text-xl font-semibold tracking-tight">
-            Meshage<span className="text-primary">.</span>
-          </span>
+          <MeshageLogo />
         </Link>
 
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
@@ -355,7 +351,7 @@ export default function HomePage() {
       <footer className="border-t">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-5 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
           <Link href="/" className="font-semibold text-foreground">
-            Meshage<span className="text-primary">.</span>
+            <MeshageLogo markClassName="size-7" wordmarkClassName="text-base" />
           </Link>
           <span>Good conversations start here.</span>
           <div className="flex items-center gap-4">

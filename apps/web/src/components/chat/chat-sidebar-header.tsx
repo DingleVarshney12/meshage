@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import CreateGroupDialog from "./create-group-dialog";
 import NotificationsBell from "@/components/notifications/notifications-bell";
+import { MeshageLogo } from "@/components/brand/meshage-logo";
 
 interface ChatSidebarHeaderProps {
   isCollapsed: boolean;
@@ -140,9 +141,7 @@ export default function ChatSidebarHeader({
     <header className="border-b bg-background/70 p-5">
       <div className="flex items-center justify-between gap-3">
         <Link href="/chat" className="flex min-w-0 items-center gap-3">
-          <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary text-lg font-bold text-primary-foreground shadow-lg shadow-primary/20">
-            M
-          </div>
+          <MeshageLogo showWordmark={false} markClassName="size-11" />
           <div className="min-w-0">
             <p className="truncate text-base font-semibold tracking-tight">
               Meshage<span className="text-primary">.</span>

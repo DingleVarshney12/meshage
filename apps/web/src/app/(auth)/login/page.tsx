@@ -17,6 +17,7 @@ import { loginWithEmail } from "@/lib/api/auth/auth.api";
 import type { AuthUser } from "@/lib/api/auth/auth.types";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { getErrorMessage } from "@/lib/utils/errors";
+import { MeshageLogo } from "@/components/brand/meshage-logo";
 export default function LoginPage() {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -48,8 +49,8 @@ export default function LoginPage() {
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-8">
         <header className="flex items-center justify-between">
-          <Link href="/" className="text-xl font-semibold tracking-tight">
-            Meshage<span className="text-primary">.</span>
+          <Link href="/" aria-label="Meshage home">
+            <MeshageLogo markClassName="size-9" wordmarkClassName="text-lg" />
           </Link>
           <Button variant="ghost" asChild>
             <Link href="/">Back home</Link>

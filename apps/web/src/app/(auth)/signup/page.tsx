@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resendVerificationEmail, signup } from "@/lib/api/auth/auth.api";
 import type { SignupInput } from "@/lib/api/auth/auth.types";
+import { MeshageLogo } from "@/components/brand/meshage-logo";
 
 export default function SignupPage() {
   const [form, setForm] = useState<SignupInput>({
@@ -78,8 +79,8 @@ export default function SignupPage() {
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-8">
         <header className="flex items-center justify-between">
-          <Link href="/" className="text-xl font-semibold tracking-tight">
-            Meshage<span className="text-primary">.</span>
+          <Link href="/" aria-label="Meshage home">
+            <MeshageLogo markClassName="size-9" wordmarkClassName="text-lg" />
           </Link>
           <Button variant="ghost" asChild>
             <Link href="/login">Sign in</Link>
