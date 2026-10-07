@@ -37,7 +37,7 @@ describe("AuthCookieService", () => {
       expect.objectContaining({
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
         path: "/api",
       }),
     );
@@ -49,7 +49,7 @@ describe("AuthCookieService", () => {
       expect.objectContaining({
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
         path: "/api/auth/refresh",
       }),
     );
@@ -64,7 +64,7 @@ describe("AuthCookieService", () => {
     expect(response.cookie).toHaveBeenCalledWith(
       "access_token",
       "access-test-token",
-      expect.objectContaining({ secure: false, httpOnly: true }),
+      expect.objectContaining({ secure: false, httpOnly: true, sameSite: "lax" }),
     );
   });
 

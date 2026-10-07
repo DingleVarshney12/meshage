@@ -7,20 +7,23 @@ const REFRESH_TOKEN_COOKIE = "refresh_token";
 
 const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 minutes
 const REFRESH_TOKEN_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
+type CookieSameSite = "lax" | "none";
 
 @Injectable()
 export class AuthCookieService {
   private readonly secure: boolean;
+  private readonly sameSite: CookieSameSite;
 
   constructor(configService: ConfigService) {
     this.secure = configService.get<string>("NODE_ENV") === "production";
+    this.sameSite = this.secure ? "none" : "lax";
   }
 
   setAccessTokenCookie(response: Response, accessToken: string): void {
     response.cookie(ACCESS_TOKEN_COOKIE, accessToken, {
       httpOnly: true,
       secure: this.secure,
-      sameSite: "lax",
+      sameSite: this.sameSite,
       path: "/api",
       maxAge: ACCESS_TOKEN_MAX_AGE,
     });
@@ -30,7 +33,7 @@ export class AuthCookieService {
     response.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {
       httpOnly: true,
       secure: this.secure,
-      sameSite: "lax",
+      sameSite: this.sameSite,
       path: "/api/auth/refresh",
       maxAge: REFRESH_TOKEN_MAX_AGE,
     });
@@ -48,7 +51,7 @@ export class AuthCookieService {
     response.clearCookie(ACCESS_TOKEN_COOKIE, {
       httpOnly: true,
       secure: this.secure,
-      sameSite: "lax",
+      sameSite: this.sameSite,
       path: "/api",
     });
   }
@@ -57,7 +60,7 @@ export class AuthCookieService {
     response.clearCookie(REFRESH_TOKEN_COOKIE, {
       httpOnly: true,
       secure: this.secure,
-      sameSite: "lax",
+      sameSite: this.sameSite,
       path: "/api/auth/refresh",
     });
   }
