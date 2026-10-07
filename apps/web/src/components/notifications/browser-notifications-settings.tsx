@@ -3,25 +3,15 @@
 import { useEffect, useState } from "react";
 import { Bell, BellOff, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  getWebPushPublicKey,
-  removeWebPushSubscription,
-  saveWebPushSubscription,
-} from "@/lib/api/notifications/notifications.api";
 import { getErrorMessage } from "@/lib/utils/errors";
+import {
+  disableBrowserPush,
+  enableBrowserPush,
+  getBrowserPushSubscription,
+  supportsBrowserPush,
+} from "@/lib/notifications/browser-push";
 
 type NotificationState = "checking" | "enabled" | "disabled" | "unsupported";
-
-function decodeApplicationServerKey(value: string): ArrayBuffer {
-  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
-  const binary = window.atob(padded);
-  const bytes = new Uint8Array(binary.length);
-  for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index);
-  }
-  return bytes.buffer as ArrayBuffer;
-}
 
 export function BrowserNotificationsSettings() {
   const [state, setState] = useState<NotificationState>("checking");
@@ -32,18 +22,13 @@ export function BrowserNotificationsSettings() {
   useEffect(() => {
     let cancelled = false;
     const checkState = async () => {
-      if (
-        !("Notification" in window) ||
-        !("serviceWorker" in navigator) ||
-        !("PushManager" in window)
-      ) {
+      if (!supportsBrowserPush()) {
         if (!cancelled) setState("unsupported");
         return;
       }
 
       try {
-        const registration = await navigator.serviceWorker.getRegistration("/");
-        const subscription = await registration?.pushManager.getSubscription();
+        const subscription = await getBrowserPushSubscription();
         if (!cancelled) {
           setState(
             Notification.permission === "granted" && subscription
@@ -67,54 +52,11 @@ export function BrowserNotificationsSettings() {
     setNotice(null);
 
     try {
-      if (
-        !("Notification" in window) ||
-        !("serviceWorker" in navigator) ||
-        !("PushManager" in window)
-      ) {
+      if (!supportsBrowserPush()) {
         setState("unsupported");
         return;
       }
-
-      const { publicKey } = await getWebPushPublicKey();
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        setState("disabled");
-        setError(
-          permission === "denied"
-            ? "Notifications are blocked in your browser settings. Allow them there, then try again."
-            : "Please allow notifications to enable browser alerts.",
-        );
-        return;
-      }
-
-      const registration = await navigator.serviceWorker.register("/sw.js", {
-        scope: "/",
-      });
-      await navigator.serviceWorker.ready;
-      const existing = await registration.pushManager.getSubscription();
-      const subscription =
-        existing ??
-        (await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: decodeApplicationServerKey(publicKey),
-        }));
-      const json = subscription.toJSON();
-      const p256dh = json.keys?.p256dh;
-      const auth = json.keys?.auth;
-
-      if (!subscription.endpoint || !p256dh || !auth) {
-        throw new Error(
-          "The browser returned an incomplete push subscription.",
-        );
-      }
-
-      await saveWebPushSubscription({
-        endpoint: subscription.endpoint,
-        p256dh,
-        auth,
-        userAgent: navigator.userAgent,
-      });
+      await enableBrowserPush();
       setState("enabled");
       setNotice("Browser notifications are enabled on this device.");
     } catch (requestError) {
@@ -133,12 +75,7 @@ export function BrowserNotificationsSettings() {
     setNotice(null);
 
     try {
-      const registration = await navigator.serviceWorker.getRegistration("/");
-      const subscription = await registration?.pushManager.getSubscription();
-      if (subscription) {
-        await removeWebPushSubscription(subscription.endpoint);
-        await subscription.unsubscribe();
-      }
+      await disableBrowserPush();
       setState("disabled");
       setNotice("Browser notifications are disabled on this device.");
     } catch (requestError) {

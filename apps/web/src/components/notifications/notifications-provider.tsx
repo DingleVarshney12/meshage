@@ -22,6 +22,7 @@ import type {
   NewNotificationEvent,
 } from "@/lib/api/notifications/notifications.types";
 import { createRealtimeSocket } from "@/lib/realtime/socket-client";
+import { BrowserNotificationPrompt } from "./browser-notification-prompt";
 
 interface NotificationsContextValue {
   notifications: AppNotification[];
@@ -133,6 +134,7 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
+      <BrowserNotificationPrompt />
     </NotificationsContext.Provider>
   );
 }
