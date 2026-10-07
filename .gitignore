@@ -1,0 +1,23 @@
+node_modules/
+.next/
+dist/
+coverage/
+.vercel/
+.turbo/
+*.tsbuildinfo
+
+.env
+.env.*
+!.env.example
+
+# Local logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+
+# Private credentials and certificates
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*

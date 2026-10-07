@@ -1,0 +1,30 @@
+{
+  "name": "modern-chat-app",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,black \"npm run dev -w @chat/api\" \"npm run dev -w @chat/web\"",
+    "dev:web": "npm run dev -w @chat/web",
+    "dev:api": "npm run dev -w @chat/api",
+    "build": "npm run build -w @chat/api && npm run build -w @chat/web",
+    "typecheck": "npm run typecheck -w @chat/api && npm run typecheck -w @chat/web",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "npm run test -w @chat/api && npm run test -w @chat/web",
+    "test:api": "npm run test -w @chat/api",
+    "test:web": "npm run test -w @chat/web",
+    "test:watch": "concurrently -n api,web -c cyan,magenta \"npm run test:watch -w @chat/api\" \"npm run test:watch -w @chat/web\"",
+    "test:coverage": "npm run test:coverage -w @chat/api && npm run test:coverage -w @chat/web",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "concurrently": "10.0.5",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.9",
+    "typescript": "6.0.3"
+  }
+}
