@@ -107,7 +107,7 @@ export default function MessageAttachmentContent({
           return (
             <div
               key={attachment.id}
-              className="flex max-w-[min(78vw,24rem)] items-center gap-3 rounded-2xl border bg-card p-3"
+              className="flex w-full min-w-0 max-w-[min(78vw,24rem)] items-center gap-2 rounded-2xl border bg-card p-2 sm:gap-3 sm:p-3"
             >
               <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                 <Music2 className="size-4" />

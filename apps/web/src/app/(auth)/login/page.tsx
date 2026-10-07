@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -26,7 +26,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleEmailLogin(event: FormEvent<HTMLFormElement>) {
+  async function handleEmailLogin(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
@@ -137,7 +137,7 @@ export default function LoginPage() {
                     <div className="h-px flex-1 bg-border" />
                   </div>
 
-                  <div className="flex justify-center">
+                  <div className="w-full min-w-0">
                     <GoogleSignInButton
                       onSuccess={(authenticatedUser) => {
                         setUser(authenticatedUser);

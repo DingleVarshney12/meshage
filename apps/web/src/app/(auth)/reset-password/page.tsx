@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage(null);
     setError(null);

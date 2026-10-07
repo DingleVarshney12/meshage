@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 import { LoaderCircle, Save } from "lucide-react";
 
 import { useAuth } from "@/components/auth/auth-provider";
@@ -33,7 +33,7 @@ export default function ProfileSettingsForm() {
     setProfileVisibility(user.profileVisibility ?? "public");
   }, [user]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!user) {

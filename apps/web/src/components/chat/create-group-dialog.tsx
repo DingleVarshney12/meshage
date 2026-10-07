@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode, type SubmitEvent } from "react";
 import { Check, LoaderCircle, UserRoundGroup } from "lucide-react";
 
 import { FriendsAvatar } from "@/components/friends/friends-avatar";
@@ -92,7 +92,7 @@ export default function CreateGroupDialog({
     setIsOpen(true);
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 

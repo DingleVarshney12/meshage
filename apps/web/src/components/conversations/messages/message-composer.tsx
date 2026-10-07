@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
   type ChangeEvent,
-  type FormEvent,
+  type SubmitEvent,
 } from "react";
 import { LoaderCircle, Paperclip, Reply, Send, X } from "lucide-react";
 
@@ -186,7 +186,7 @@ export default function MessageComposer({
     });
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const messageBody = body.trim();

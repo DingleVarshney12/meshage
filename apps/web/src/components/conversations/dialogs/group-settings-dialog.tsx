@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type SubmitEvent } from "react";
 import Image from "next/image";
 import { ImagePlus, LoaderCircle, Settings2, Trash2 } from "lucide-react";
 
@@ -66,7 +66,7 @@ export default function GroupSettingsDialog({
     setPreviewUrl(file ? URL.createObjectURL(file) : null);
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setIsSaving(true);

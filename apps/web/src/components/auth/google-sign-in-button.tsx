@@ -1,7 +1,8 @@
 "use client";
 
 import Script from "next/script";
-import { useCallback, useRef, useState } from "react";
+import { LoaderCircle } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { loginWithGoogle } from "@/lib/api/auth/auth.api";
 import type { AuthUser } from "@/lib/api/auth/auth.types";
 
@@ -21,6 +22,7 @@ interface GoogleIdentityApi {
         options: {
           theme: "outline";
           size: "large";
+          shape: "rectangular";
           width: number;
         },
       ): void;
@@ -42,7 +44,9 @@ const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 export function GoogleSignInButton({ onSuccess }: GoogleSignInButtonProps) {
   const buttonRef = useRef<HTMLDivElement>(null);
+  const buttonWidthRef = useRef(0);
   const [error, setError] = useState<string | null>(null);
+  const [isGoogleReady, setIsGoogleReady] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleCredential = useCallback(
@@ -75,14 +79,22 @@ export function GoogleSignInButton({ onSuccess }: GoogleSignInButtonProps) {
     [onSuccess],
   );
 
-  const initializeGoogleButton = useCallback(() => {
+  const renderGoogleButton = useCallback(() => {
     if (!googleClientId) {
       setError("Google sign-in is not configured.");
       return;
     }
 
-    if (!window.google || !buttonRef.current) {
+    const buttonElement = buttonRef.current;
+
+    if (!window.google || !buttonElement) {
       setError("Google sign-in could not load. Please refresh the page.");
+      return;
+    }
+
+    const buttonWidth = Math.floor(buttonElement.clientWidth);
+
+    if (buttonWidth <= 0 || buttonWidth === buttonWidthRef.current) {
       return;
     }
 
@@ -91,25 +103,57 @@ export function GoogleSignInButton({ onSuccess }: GoogleSignInButtonProps) {
       callback: handleCredential,
     });
 
-    window.google.accounts.id.renderButton(buttonRef.current, {
+    buttonElement.replaceChildren();
+    window.google.accounts.id.renderButton(buttonElement, {
       theme: "outline",
       size: "large",
-      width: 320,
+      shape: "rectangular",
+      width: buttonWidth,
     });
+    buttonWidthRef.current = buttonWidth;
+    setIsGoogleReady(true);
   }, [handleCredential]);
 
+  useEffect(() => {
+    const element = buttonRef.current;
+
+    if (!element || !isGoogleReady) {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver(renderGoogleButton);
+    resizeObserver.observe(element);
+
+    return () => resizeObserver.disconnect();
+  }, [isGoogleReady, renderGoogleButton]);
+
   return (
-    <div className="space-y-3">
+    <div className="w-full min-w-0 space-y-3">
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
-        onLoad={initializeGoogleButton}
-        onError={() =>
-          setError("Google sign-in could not load. Please refresh the page.")
-        }
+        onLoad={renderGoogleButton}
+        onError={() => {
+          setIsGoogleReady(false);
+          setError("Google sign-in could not load. Please refresh the page.");
+        }}
       />
 
-      <div ref={buttonRef} />
+      <div className="relative w-full overflow-hidden rounded-xl">
+        <div
+          ref={buttonRef}
+          className={`w-full ${isGoogleReady ? "" : "invisible h-11"}`}
+        />
+        {!isGoogleReady && !error ? (
+          <div
+            aria-live="polite"
+            className="absolute inset-0 flex h-11 items-center justify-center gap-2 rounded-xl border bg-background text-sm text-muted-foreground"
+          >
+            <LoaderCircle className="size-4 animate-spin" />
+            Loading Google sign-in…
+          </div>
+        ) : null}
+      </div>
 
       {loading && (
         <p className="text-center text-sm text-muted-foreground">
@@ -118,7 +162,7 @@ export function GoogleSignInButton({ onSuccess }: GoogleSignInButtonProps) {
       )}
 
       {error && (
-        <p role="alert" className="text-center text-sm text-destructive">
+        <p role="alert" className="text-sm text-destructive">
           {error}
         </p>
       )}

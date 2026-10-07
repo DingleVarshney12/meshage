@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import {
   Card,
   CardContent,
@@ -33,7 +33,7 @@ export default function SignupPage() {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
-  async function handleSignup(event: FormEvent<HTMLFormElement>) {
+  async function handleSignup(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setLoading(true);

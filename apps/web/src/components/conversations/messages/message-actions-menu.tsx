@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { Ellipsis, LoaderCircle, Pencil, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -46,7 +46,7 @@ export default function MessageActionsMenu({
     setIsEditOpen(true);
   }
 
-  async function handleEdit(event: FormEvent<HTMLFormElement>) {
+  async function handleEdit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     try {

@@ -70,7 +70,7 @@ export default function VoiceMessagePlayer({
   const progress = duration > 0 ? currentTime / duration : 0;
 
   return (
-    <div className="flex min-w-0 flex-1 items-start gap-3">
+    <div className="flex min-w-0 flex-1 items-start gap-2 sm:gap-3">
       <audio
         ref={audioRef}
         src={src}
@@ -112,14 +112,14 @@ export default function VoiceMessagePlayer({
             seekTo(event.clientX, event.currentTarget)
           }
           onKeyDown={handleWaveformKeyDown}
-          className="flex h-10 cursor-pointer items-center justify-between gap-[2px] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-10 min-w-0 cursor-pointer items-center justify-between gap-px overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {waveform.map((value, index) => (
             <span
               key={index}
               aria-hidden="true"
               className={[
-                "min-w-[2px] flex-1 rounded-full transition-colors",
+                "min-w-px flex-1 rounded-full transition-colors",
                 index / waveform.length <= progress
                   ? "bg-primary"
                   : "bg-muted-foreground/40",
