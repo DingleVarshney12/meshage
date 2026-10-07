@@ -22,6 +22,19 @@ export class SupabaseStorageService {
     return this.client !== null;
   }
 
+  async checkConnection(): Promise<boolean> {
+    if (!this.client) {
+      return false;
+    }
+
+    try {
+      const { error } = await this.client.storage.getBucket(this.bucket);
+      return !error;
+    } catch {
+      return false;
+    }
+  }
+
   async uploadObject(
     storagePath: string,
     file: Buffer,

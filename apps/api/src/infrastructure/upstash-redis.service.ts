@@ -15,4 +15,17 @@ export class UpstashRedisService {
   get isConfigured() {
     return this.client !== null;
   }
+
+  async checkConnection(): Promise<boolean> {
+    if (!this.client) {
+      return false;
+    }
+
+    try {
+      await this.client.ping();
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
