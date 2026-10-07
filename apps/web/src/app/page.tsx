@@ -18,7 +18,7 @@ import { MeshageLogo } from "@/components/brand/meshage-logo";
 
 const conversations = [
   {
-    initials: "M",
+    initials: "DV",
     name: "Dingle Varshney",
     message: "That sounds like the perfect plan ✨",
     time: "now",
@@ -34,8 +34,8 @@ const conversations = [
     online: false,
   },
   {
-    initials: "A",
-    name: "Jehta Lal",
+    initials: "JL",
+    name: "Jetha Lal",
     message: "Sent a photo",
     time: "18m",
     color: "bg-emerald-100 text-emerald-700",
