@@ -17,6 +17,7 @@ import ThemeToggle from "@/components/theme/theme-toggle";
 import { MeshageLogo } from "@/components/brand/meshage-logo";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { RedirectAuthenticatedHome } from "@/components/auth/redirect-authenticated-home";
+import { LegalLinks } from "@/components/legal/legal-links";
 
 const conversations = [
   {
@@ -363,13 +364,14 @@ export default function HomePage() {
               />
             </Link>
             <span>Good conversations start here.</span>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <Link href="/login" className="transition hover:text-foreground">
                 Log in
               </Link>
               <Link href="/signup" className="transition hover:text-foreground">
                 Create account
               </Link>
+              <LegalLinks className="gap-x-4 text-xs" />
             </div>
           </div>
         </footer>

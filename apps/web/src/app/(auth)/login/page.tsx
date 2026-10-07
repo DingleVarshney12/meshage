@@ -18,6 +18,7 @@ import type { AuthUser } from "@/lib/api/auth/auth.types";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { getErrorMessage } from "@/lib/utils/errors";
 import { MeshageLogo } from "@/components/brand/meshage-logo";
+import { GoogleRecaptcha } from "@/components/auth/google-recaptcha";
 export default function LoginPage() {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -25,15 +26,21 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [captchaAttempt, setCaptchaAttempt] = useState(0);
 
   async function handleEmailLogin(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    if (!recaptchaToken) {
+      setError("Please complete the reCAPTCHA checkbox first.");
+      return;
+    }
 
     setLoading(true);
 
     try {
-      const result = await loginWithEmail({ email, password });
+      const result = await loginWithEmail({ email, password, recaptchaToken });
       setUser(result.user);
       router.replace("/chat");
     } catch (loginError) {
@@ -41,6 +48,8 @@ export default function LoginPage() {
         getErrorMessage(loginError, "Sign-in failed. Please try again."),
       );
     } finally {
+      setRecaptchaToken("");
+      setCaptchaAttempt((attempt) => attempt + 1);
       setLoading(false);
     }
   }
@@ -106,6 +115,11 @@ export default function LoginPage() {
                       />
                     </div>
 
+                    <GoogleRecaptcha
+                      key={captchaAttempt}
+                      onTokenChange={(token) => setRecaptchaToken(token ?? "")}
+                    />
+
                     <div className="space-y-2">
                       <Label htmlFor="password">Password</Label>
                       <Input
@@ -139,6 +153,11 @@ export default function LoginPage() {
 
                   <div className="w-full min-w-0">
                     <GoogleSignInButton
+                      recaptchaToken={recaptchaToken || null}
+                      onCaptchaConsumed={() => {
+                        setRecaptchaToken("");
+                        setCaptchaAttempt((attempt) => attempt + 1);
+                      }}
                       onSuccess={(authenticatedUser) => {
                         setUser(authenticatedUser);
                         router.replace("/chat");

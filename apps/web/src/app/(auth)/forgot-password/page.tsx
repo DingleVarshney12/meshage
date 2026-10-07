@@ -13,21 +13,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { forgotPassword } from "@/lib/api/auth/auth.api";
+import { GoogleRecaptcha } from "@/components/auth/google-recaptcha";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [captchaAttempt, setCaptchaAttempt] = useState(0);
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage(null);
     setError(null);
+    if (!recaptchaToken) {
+      setError("Please complete the reCAPTCHA checkbox first.");
+      return;
+    }
     setLoading(true);
 
     try {
-      const result = await forgotPassword({ email });
+      const result = await forgotPassword({ email, recaptchaToken });
       setMessage(result.message);
     } catch (requestError) {
       setError(
@@ -36,6 +43,8 @@ export default function ForgotPasswordPage() {
           : "Please try again later.",
       );
     } finally {
+      setRecaptchaToken("");
+      setCaptchaAttempt((attempt) => attempt + 1);
       setLoading(false);
     }
   }
@@ -68,6 +77,11 @@ export default function ForgotPasswordPage() {
                   onChange={(event) => setEmail(event.target.value)}
                 />
               </div>
+
+              <GoogleRecaptcha
+                key={captchaAttempt}
+                onTokenChange={(token) => setRecaptchaToken(token ?? "")}
+              />
 
               {error && (
                 <p role="alert" className="text-sm text-destructive">

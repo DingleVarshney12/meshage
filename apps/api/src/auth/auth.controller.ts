@@ -28,12 +28,14 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { ChangePasswordDto } from "./dto/change-password.dto";
 import { GoogleAuthDto } from "./dto/google-auth.dto";
 import { RateLimit } from "../common/decorators/rate-limit.decorator";
+import { GoogleRecaptchaService } from "../infrastructure/google-recaptcha.service";
 
 @Controller("auth")
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly authCookieService: AuthCookieService,
+    private readonly googleRecaptchaService: GoogleRecaptchaService,
   ) {}
 
   private completeLogin<TUser>(
@@ -54,7 +56,8 @@ export class AuthController {
 
   @Post("signup")
   @RateLimit(5, 60 * 60 * 1000)
-  signup(@Body() signupDto: SignupDto) {
+  async signup(@Body() signupDto: SignupDto) {
+    await this.googleRecaptchaService.verifyOrThrow(signupDto.recaptchaToken);
     return this.authService.signup(signupDto);
   }
 
@@ -68,7 +71,8 @@ export class AuthController {
   @Post("resend-verification")
   @RateLimit(3, 60 * 60 * 1000)
   @HttpCode(HttpStatus.ACCEPTED)
-  resendVerification(@Body() dto: ResendVerificationDto) {
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    await this.googleRecaptchaService.verifyOrThrow(dto.recaptchaToken);
     return this.authService.resendVerificationEmail(dto);
   }
 
@@ -79,6 +83,7 @@ export class AuthController {
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) response: Response,
   ) {
+    await this.googleRecaptchaService.verifyOrThrow(dto.recaptchaToken);
     const result = await this.authService.login(dto);
     return this.completeLogin(response, result);
   }
@@ -123,7 +128,8 @@ export class AuthController {
   @Post("forgot-password")
   @RateLimit(3, 60 * 60 * 1000)
   @HttpCode(HttpStatus.ACCEPTED)
-  forgotPassword(@Body() dto: ForgotPasswordDto) {
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    await this.googleRecaptchaService.verifyOrThrow(dto.recaptchaToken);
     return this.authService.forgotPassword(dto);
   }
 
@@ -156,6 +162,7 @@ export class AuthController {
     @Body() dto: GoogleAuthDto,
     @Res({ passthrough: true }) response: Response,
   ) {
+    await this.googleRecaptchaService.verifyOrThrow(dto.recaptchaToken);
     const result = await this.authService.googleLogin(dto);
     return this.completeLogin(response, result);
   }

@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { resendVerificationEmail, signup } from "@/lib/api/auth/auth.api";
 import type { SignupInput } from "@/lib/api/auth/auth.types";
 import { MeshageLogo } from "@/components/brand/meshage-logo";
+import { GoogleRecaptcha } from "@/components/auth/google-recaptcha";
 
 export default function SignupPage() {
   const [form, setForm] = useState<SignupInput>({
@@ -22,7 +23,9 @@ export default function SignupPage() {
     username: "",
     displayName: "",
     password: "",
+    recaptchaToken: "",
   });
+  const [captchaAttempt, setCaptchaAttempt] = useState(0);
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
@@ -36,6 +39,10 @@ export default function SignupPage() {
   async function handleSignup(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    if (!form.recaptchaToken) {
+      setError("Please complete the reCAPTCHA checkbox first.");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -48,12 +55,18 @@ export default function SignupPage() {
           : "Account creation failed. Please try again.",
       );
     } finally {
+      setForm((current) => ({ ...current, recaptchaToken: "" }));
+      setCaptchaAttempt((attempt) => attempt + 1);
       setLoading(false);
     }
   }
 
   async function handleResendVerification() {
     if (!submittedEmail) return;
+    if (!form.recaptchaToken) {
+      setError("Please complete the reCAPTCHA checkbox first.");
+      return;
+    }
 
     setError(null);
     setResendMessage(null);
@@ -62,6 +75,7 @@ export default function SignupPage() {
     try {
       const result = await resendVerificationEmail({
         email: submittedEmail,
+        recaptchaToken: form.recaptchaToken,
       });
       setResendMessage(result.message);
     } catch (resendError) {
@@ -71,6 +85,8 @@ export default function SignupPage() {
           : "Please try again later.",
       );
     } finally {
+      setForm((current) => ({ ...current, recaptchaToken: "" }));
+      setCaptchaAttempt((attempt) => attempt + 1);
       setResending(false);
     }
   }
@@ -111,6 +127,15 @@ export default function SignupPage() {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
+                  <GoogleRecaptcha
+                    key={captchaAttempt}
+                    onTokenChange={(recaptchaToken) =>
+                      setForm((current) => ({
+                        ...current,
+                        recaptchaToken: recaptchaToken ?? "",
+                      }))
+                    }
+                  />
                   {resendMessage && (
                     <p className="text-sm text-muted-foreground">
                       {resendMessage}
@@ -164,6 +189,16 @@ export default function SignupPage() {
                         }
                       />
                     </div>
+
+                    <GoogleRecaptcha
+                      key={captchaAttempt}
+                      onTokenChange={(recaptchaToken) =>
+                        setForm((current) => ({
+                          ...current,
+                          recaptchaToken: recaptchaToken ?? "",
+                        }))
+                      }
+                    />
 
                     <div className="space-y-2">
                       <Label htmlFor="username">Username</Label>

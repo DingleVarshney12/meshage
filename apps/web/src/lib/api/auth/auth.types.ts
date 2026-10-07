@@ -3,6 +3,7 @@ export interface AuthResponse {
 }
 
 export interface SignupInput {
+  recaptchaToken: string;
   email: string;
   username: string;
   displayName: string;
@@ -10,15 +11,18 @@ export interface SignupInput {
 }
 
 export interface LoginInput {
+  recaptchaToken: string;
   email: string;
   password: string;
 }
 
 export interface GoogleLoginInput {
+  recaptchaToken: string;
   idToken: string;
 }
 
 export interface EmailInput {
+  recaptchaToken: string;
   email: string;
 }
 

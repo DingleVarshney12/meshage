@@ -37,17 +37,28 @@ declare global {
 }
 
 interface GoogleSignInButtonProps {
+  recaptchaToken: string | null;
+  onCaptchaConsumed: () => void;
   onSuccess: (user: AuthUser) => void;
 }
 
 const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
-export function GoogleSignInButton({ onSuccess }: GoogleSignInButtonProps) {
+export function GoogleSignInButton({
+  recaptchaToken,
+  onCaptchaConsumed,
+  onSuccess,
+}: GoogleSignInButtonProps) {
   const buttonRef = useRef<HTMLDivElement>(null);
   const buttonWidthRef = useRef(0);
+  const recaptchaTokenRef = useRef(recaptchaToken);
   const [error, setError] = useState<string | null>(null);
   const [isGoogleReady, setIsGoogleReady] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    recaptchaTokenRef.current = recaptchaToken;
+  }, [recaptchaToken]);
 
   const handleCredential = useCallback(
     async (googleResponse: GoogleCredentialResponse) => {
@@ -58,11 +69,18 @@ export function GoogleSignInButton({ onSuccess }: GoogleSignInButtonProps) {
         return;
       }
 
+      const currentRecaptchaToken = recaptchaTokenRef.current;
+      if (!currentRecaptchaToken) {
+        setError("Please complete the reCAPTCHA checkbox first.");
+        return;
+      }
+
       setLoading(true);
 
       try {
         const result = await loginWithGoogle({
           idToken: googleResponse.credential,
+          recaptchaToken: currentRecaptchaToken,
         });
 
         onSuccess(result.user);
@@ -73,10 +91,11 @@ export function GoogleSignInButton({ onSuccess }: GoogleSignInButtonProps) {
             : "Google sign-in failed. Please try again.",
         );
       } finally {
+        onCaptchaConsumed();
         setLoading(false);
       }
     },
-    [onSuccess],
+    [onCaptchaConsumed, onSuccess],
   );
 
   const renderGoogleButton = useCallback(() => {
